@@ -29,37 +29,38 @@ from adobe.pdfservices.operation.pdfops.options.extractpdf.extract_renditions_el
 from adobe.pdfservices.operation.pdfops.options.extractpdf.table_structure_type import TableStructureType
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
-try:
-    # get base path.
-    base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+def run_extract_pdf():
+    try:
+        # get base path.
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    # Initial setup, create credentials instance.
-    credentials = Credentials.service_principal_credentials_builder(). \
-        with_client_id('df2c14b4400b45ad90dbdad6e020ae00'). \
-        with_client_secret('p8e-dyn7lc07xQw5-v5IpuoF-TA6-HX3trZS'). \
-        build()
+        # Initial setup, create credentials instance.
+        credentials = Credentials.service_principal_credentials_builder(). \
+            with_client_id('df2c14b4400b45ad90dbdad6e020ae00'). \
+            with_client_secret('p8e-dyn7lc07xQw5-v5IpuoF-TA6-HX3trZS'). \
+            build()
 
-    # Create an ExecutionContext using credentials and create a new operation instance.
-    execution_context = ExecutionContext.create(credentials)
-    extract_pdf_operation = ExtractPDFOperation.create_new()
+        # Create an ExecutionContext using credentials and create a new operation instance.
+        execution_context = ExecutionContext.create(credentials)
+        extract_pdf_operation = ExtractPDFOperation.create_new()
 
-    # Set operation input from a source file.
-    source = FileRef.create_from_local_file('/Users/hit/output/AutotagPDFWithOptions/GetSafe-tagged.pdf')
-    extract_pdf_operation.set_input(source)
+        # Set operation input from a source file.
+        source = FileRef.create_from_local_file('/Users/hit/output/AutotagPDFWithOptions/GetSafe-tagged.pdf')
+        extract_pdf_operation.set_input(source)
 
-    # Build ExtractPDF options and set them into the operation
-    extract_pdf_options: ExtractPDFOptions = ExtractPDFOptions.builder() \
-        .with_elements_to_extract([ExtractElementType.TEXT, ExtractElementType.TABLES]) \
-        .with_include_styling_info(True) \
-        .with_table_structure_format(TableStructureType.CSV) \
-        .with_elements_to_extract_renditions([ExtractRenditionsElementType.FIGURES, ExtractRenditionsElementType.TABLES]) \
-        .build()
-    extract_pdf_operation.set_options(extract_pdf_options)
+        # Build ExtractPDF options and set them into the operation
+        extract_pdf_options: ExtractPDFOptions = ExtractPDFOptions.builder() \
+            .with_elements_to_extract([ExtractElementType.TEXT, ExtractElementType.TABLES]) \
+            .with_include_styling_info(True) \
+            .with_table_structure_format(TableStructureType.CSV) \
+            .with_elements_to_extract_renditions([ExtractRenditionsElementType.FIGURES, ExtractRenditionsElementType.TABLES]) \
+            .build()
+        extract_pdf_operation.set_options(extract_pdf_options)
 
-    # Execute the operation.
-    result: FileRef = extract_pdf_operation.execute(execution_context)
+        # Execute the operation.
+        result: FileRef = extract_pdf_operation.execute(execution_context)
 
-    # Save the result to the specified location.
-    result.save_as(base_path + "/output/ExtractTextInfoWithStylingInfoFromPDF3.zip")
-except (ServiceApiException, ServiceUsageException, SdkException):
-    logging.exception("Exception encountered while executing operation")
+        # Save the result to the specified location.
+        result.save_as(base_path + "/output/ExtractTextInfoWithStylingInfoFromPDF3.zip")
+    except (ServiceApiException, ServiceUsageException, SdkException):
+        logging.exception("Exception encountered while executing operation")
